@@ -10,6 +10,9 @@
 * Open console and follow to the main folder(containing **db_setup.py**)
 * Open file **db_setup.py** and choose if you want to use the default category names or create your own.
 * Write in console ``` python db_setup.py ``` . When all is done, you will see the confirmation message.
+* Create your own **CLIENT_ID** on ```https://console.developers.google.com/ ```
+* Open file **application.py** and fill in CLIENT_ID in appropriate field on the top of the file.
+* Also it's highly recommended to change the **secret_key** in **application.py** to your own long random string. It is used by Flask in session hashing.
 
 * Run main application: ```python application.py ```
 * Open the webbrowser and in address line write: ```http://localhost:8000/```
