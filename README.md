@@ -19,7 +19,7 @@
 ####Application Features:
 * Unauthenticated user may:
   * Browse through the categories and items 
-  * Download the JSON file with database data by the link on the bottom of the page or by address ```http://localhost:8000/catalog.json/ ```
+  * Download the JSON file with database data by the link in the bottom of the page or by address ```http://localhost:8000/catalog.json/ ```
   
 * Authenticated user may, in addition to above options:
   * Add new item to desired category
