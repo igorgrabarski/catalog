@@ -1,0 +1,277 @@
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>Catalog App</title>
+		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}">
+		<meta name="google-signin-scope" content="profile email">
+    	<meta name="google-signin-client_id" content="294279859353-mg8g2jofanljdp4enr5utfqfme59nf46.apps.googleusercontent.com">
+	</head>
+	<body>
+
+		<!-- ************************** Main Container Block ************************************** -->
+		<div class="container-main">
+
+			<!-- ********************** Top Title Block ******************************************* -->
+			<div class="top-block">
+				<a href="/">
+					<span class="top-title">
+						Catalog App
+					</span>
+				</a>
+				<scan class="welcome-text">
+				Welcome,
+				{% if 'name' not in local_session %}
+					guest
+					<a href="#" onclick="switchForm('signinForm', true);"><div class="a-signin">Sign in</div></a>
+				{% else %}
+					{{local_session['name']}}
+					<img  class="user-image" src="{{ local_session['image']}}" 
+					title="{{ local_session['name']}}" alt="{{ local_session['name']}}"/>
+					</scan>
+					<a  class="a-signout" href="#" onclick="signOut();">Sign out</a>
+				{% endif %}
+				
+			</div>
+
+			<!-- *********************** Categories Block ******************************************* -->
+			<div class="category-block">
+				<div class="middle-title">Categories:</div>
+				{% for category in categories %}
+					{% if category['id'] == category_active_id %}
+						<a href="{{ '/' ~ category['id'] ~ '/0/' }}">
+							<span class="category" style="background-color: #333333;padding: 5px; border-radius: 10px;">
+								{{category['name']}}
+							</span>
+						</a>
+					{% else %}
+						<a href="{{ '/' ~ category['id'] ~ '/0/' }}">
+							<span class="category">
+								{{category['name']}}
+							</span>
+						</a>
+					{% endif %}
+				{% endfor %}
+			</div>
+
+			<!-- **************************** Items Block ***************************************** -->
+			<div class="item-block">
+				<div class="middle-title">
+					Items: 
+					<!-- *************Add Item Link ********************** -->
+					{% if 'name' in local_session %}
+					<a href="#" onclick="switchForm('addForm', true);" class="add_edit_delete">
+						Add item...
+					</a>
+					<hr>
+					{% endif %}
+				</div>
+				<br>
+				{% for item in items %}
+					<ul>
+					{% if item['id'] == description['id'] %}
+						<li>
+						<a href="{{'/' ~ item['category_id'] ~ '/' ~ item['id']}}"">
+							<span class="category" style="background-color: #333333;padding: 5px; border-radius: 10px;">
+								{{item['name']}}
+							</span>
+						</a>
+						</li>
+					{% else %}
+						<li>
+						<a href="{{'/' ~ item['category_id'] ~ '/' ~ item['id']}}"">
+							<span class="category">
+								{{item['name']}}
+							</span>
+						</a>
+						</li>
+					{% endif %}
+					</ul>
+				{% endfor %}
+			</div>
+
+			<!-- ********************************* Item Description Block ***************************** -->
+			<div class="description-block">
+				<div class="middle-title">
+					Item Description:
+				</div>
+				<br>
+				{% if description['description'] != 'None' %}
+				<p>
+					{{ description['description'] }}
+					<br>
+					<i>Author:
+					<img  class="user-image" src="{{ author['image_url']}}" 
+					title="{{ author['user_name']}}" alt="{{ author['user_name']}}"/>
+					{{ author['user_name'] }}</i>
+				</p>
+				{% endif %}
+				<br><br>
+				<!-- ************* Edit Description Link ********************** -->
+				{% if 'name' in local_session  and description['description'] != 'None' and local_session['id'] == description['user_id']%}
+				<hr>
+				<a href="#" onclick="switchForm('editForm', true);" class="add_edit_delete">
+					Edit
+				</a>
+				{% endif %}
+				<!-- *************Delete Description Link ********************** -->
+				{% if 'name' in local_session  and description['description'] != 'None' and local_session['id'] == description['user_id']%}
+				<a href="#" onclick="switchForm('deleteForm', true);" class="add_edit_delete">
+					Delete
+				</a>
+				{% endif %}
+			</div>
+			<!-- ********************************* Json Download Block ***************************** -->
+			<div class="download-block">
+				<div class="middle-title">
+					<a href="/catalog.json/" title="catalog.json">
+						Download catalog.json
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- *************************************** Add Item Form Block ********************************* -->
+		<div class="form-block" id="addForm">
+			<form action="/add_item/" method="post">
+				<div class="middle-title">Add Item</div>
+				Category
+				<select name="category" class="form-input">
+					{% for category in categories %}
+						<option name="category" value="{{ category['id'] }}">
+							{{ category['name']}}
+						</option>
+						<br>
+					{% endfor %}
+				</select>
+				<br><br>
+				Item Name
+				<input type="text" class="form-input" name="item_name" value="{{ request.form.item_name }}">
+				<br><br>
+				Item Description
+				<textarea class="form-input" name="item_description" value="{{ request.form.item_description }}" rows="5" cols="50">
+					
+				</textarea>
+				<br><br>
+				<input type="submit"  class="form-button" name="submit" value="Save">
+				<input type="reset" class="form-button"  name="reset">
+				<input type="button" class="form-button" value="Close" name="close" onclick="switchForm('addForm', false);">
+			</form>
+		</div>
+
+		<!-- *************************************** Edit Item Form Block ********************************* -->
+		<div class="form-block" id="editForm">
+			<form action="/edit_item/" method="post">
+				<div class="middle-title">Edit Item</div>
+				Category: {{description['category_id']}}
+				<br><br>
+				Item Name
+				<input type="text" class="form-input" name="item_name" value="{{ description['name']}}">
+				<input type="hidden" name="item_id" value="{{description['id']}}">
+				<br><br>
+				Item Description
+				<textarea class="form-input" name="item_description" value="{{ request.form.item_description }}" rows="5" cols="50">{{description['description']}}</textarea>
+				<br><br>
+				<input type="submit"  class="form-button" name="save" value="Save">
+				<input type="reset" class="form-button"  name="reset">
+				<input type="button" class="form-button" value="Close" name="close" onclick="switchForm('editForm', false);">
+			</form>
+		</div>
+
+		<!-- *************************************** Delete Item Form Block ********************************* -->
+		<div class="form-delete" id="deleteForm">
+			<form action="/delete_item/" method="post">
+				<div class="middle-title">Delete Item</div>
+				Are you sure you want to delete '<i>{{description['name']}}</i>' ?
+				<br><br>
+				<input type="hidden" name="item_id" value="{{description['id']}}">
+				<input type="submit"  class="form-button" name="submit" value="Delete">
+				<input type="button" class="form-button" value="Close" name="close" onclick="switchForm('deleteForm', false);">
+			</form>
+		</div>
+		<!-- *************************************** Sign in Form Block ********************************* -->
+		<div class="form-delete" id="signinForm">
+			
+				<div class="middle-title">Sign in</div>
+				<span class="g-signin2 google-button" data-onsuccess="onSignIn" data-theme="dark"></span>	
+				<input type="button" class="close-button" value="Close" name="close" onclick="switchForm('signinForm', false);">
+			
+		</div>
+
+		<!-- ********************************** Flashing Messages Block ******************************* -->
+		<div id="popup">
+			{% with messages=get_flashed_messages(category_filter=['popup']) %}
+				{% if messages %}
+					{% for message in messages %}
+						<span class="popup" id="popup" style="display: block;">{{message}}
+							<a class="popup-close" href="#" onclick="switchForm('popup', false);" title="Close">
+								X
+							</a>
+						</span>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}	
+		</div>
+
+		<!-- ***************************** JavaScript Functions Block ********************************* -->
+		<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+		<script type="text/javascript">
+			<!-- Function shows / hides forms  -->
+			function switchForm(formName, toShow){
+				form = document.getElementById(formName);
+				if(toShow){
+					form.setAttribute("style","display:block;");
+				}
+				else{
+					form.setAttribute("style","display:none;");
+				}			
+			}
+		
+			<!-- Authenticates user with Google Oauth server and transmits data to backend  -->
+  			function onSignIn(googleUser) {
+			    var id_token = googleUser.getAuthResponse().id_token;
+			    var profile = googleUser.getBasicProfile();
+			    var name = profile.getName();
+			    var imageUrl = profile.getImageUrl();
+			    var email = profile.getEmail();
+		    	var method = 'POST';
+		    	var url = '/login/';
+			    var data = 'state=' + '{{state}}' + '&id_token=' + id_token + '&name=' + name + '&imageUrl=' + imageUrl + '&email=' + email;
+			    var respText = 'signedin'
+			    
+			    sendXHR(method, url, data, respText);
+  			};
+
+			<!-- Deauthenticates user with Google and transmits data to backend -->
+  			function signOut() {
+  				console.log('invoked')
+    			var auth2 = gapi.auth2.getAuthInstance();
+    			auth2.signOut().then(function () {
+      			console.log('User signed out from Google.');
+    			});
+    			var method = 'POST';
+		    	var url = '/logout/';
+			    var data = '';
+			    var respText = 'signedout'
+			    
+			    sendXHR(method, url, data, respText);
+
+  			};
+  			<!-- Helper function to send XMLHttpRequest to the server -->
+  			function sendXHR(method, url, data, respText){
+  				var xhr = new XMLHttpRequest();
+  				xhr.open(method, url);
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+				xhr.onload = function() {
+					if(xhr.responseText == respText){
+					window.location.href="/";
+				}
+
+  				};
+  				xhr.send(data);
+			};
+    	</script>
+	</body>
+	</html>
+
