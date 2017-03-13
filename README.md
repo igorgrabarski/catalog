@@ -1,6 +1,6 @@
 ## Catalog App
 
-####Application provides the necessary functionality to maintain the datbase of items, divided by categories. It includes the user's authentication with Google Oauth Platform.
+####Application provides the necessary functionality to maintain the database of items, divided by categories. It includes the user's authentication with Google Oauth Platform.
 
 ####Prerequisites:
 * python 2.x installed on the machine. To check, write in console: ``` python --version ```
