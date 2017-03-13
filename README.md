@@ -12,7 +12,7 @@
 * Write in console ``` python db_setup.py ``` . When all is done, you will see the confirmation message.
 
 * Run main application: ```python application.py ```
-* Open the webbrowser and in address line write: ```http:localhost:8000```
+* Open the webbrowser and in address line write: ```http://localhost:8000/```
 
 * To stop application, in console press control+C for Mac or ctrl+C for Linux/Windows
 
